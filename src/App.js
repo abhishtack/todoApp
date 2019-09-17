@@ -20,17 +20,18 @@ class TodoApp extends React.Component {
 
     // Add item in ToDo
     handleSubmit = (e) => {
+        const text = this.state.text;
         e.preventDefault();
-        if (!this.state.text.length) {
+        if (!text.length) {
             return;
         }
-        const ifExist = (this.state.items.find(item => item.text === this.state.text));
+        const ifExist = (this.state.items.find(item => item.text === text));
         if (ifExist) {
             alert('Exist');
             return;
         }
         const newItem = {
-            text: this.state.text,
+            text: text,
             id: Date.now()
         };
         this.setState(state => ({
