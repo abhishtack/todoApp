@@ -1,16 +1,29 @@
 import React from 'react';
 
+/**
+ *
+ *
+ * @class TodoApp
+ * @extends {React.Component}
+ */
 class TodoApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             items: [],
-            text: ''
+            text: '',
+            selectValue: 'ToDo'
         };
     }
 
+    // Set iput value in state
     handleChange = (e) => {
         this.setState({text: e.target.value});
+    }
+
+    // Set dropdown value in state
+    handleChangeDropDown = (e) => {
+        this.setState({selectValue: e.target.value});
     }
 
     // Empty ToDo
@@ -21,10 +34,12 @@ class TodoApp extends React.Component {
     // Add item in ToDo
     handleSubmit = (e) => {
         const text = this.state.text;
+        const selectCategory = this.state.selectValue;
         e.preventDefault();
         if (!text.length) {
             return;
         }
+        // Check existing todo
         const ifExist = (this.state.items.find(item => item.text === text));
         if (ifExist) {
             alert('Exist');
@@ -32,7 +47,8 @@ class TodoApp extends React.Component {
         }
         const newItem = {
             text: text,
-            id: Date.now()
+            id: Date.now(),
+            selectCategory
         };
         this.setState(state => ({
             items: state
@@ -67,26 +83,84 @@ class TodoApp extends React.Component {
                     <button onClick={this.emptyTodo}>
                         Empty
                     </button>
+                    <select value={this.state.selectValue} onChange={this.handleChangeDropDown}>
+                        <option value="ToDO">ToDo</option>
+                        <option value="InProgress">InProgress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
                 </form>
             </div>
         );
     }
 }
 
+/**
+ *
+ *
+ * @class ProductCategoryRow
+ * @extends {React.Component}
+ * It will shows the category as a header
+ */
+class ProductCategoryRow extends React.Component {
+    render() {
+        const category = this.props.category;
+        return (
+            <tr>
+                <th colSpan="2">
+                    {category}
+                </th>
+            </tr>
+        );
+    }
+}
+
+/**
+ *
+ *
+ * @class CategoryRow
+ * @extends {React.Component}
+ * It will contains all the item which belong to category
+ */
+class CategoryRow extends React.Component {
+    render() {
+        const item = this.props.categoryItem;
+        return (
+            <li key={item.id}>{item.text}
+                <button onClick={() => this.props.deleteItem(item.id)}>
+                    Empty
+                </button>
+            </li>
+        );
+    }
+}
+
+/**
+ *
+ *
+ * @class TodoList
+ * @extends {React.Component}
+ */
 class TodoList extends React.Component {
     render() {
+        let prevCategory = null;
+        const rows = [];
+
+        this
+            .props
+            .items
+            .forEach((item) => {
+                if (item.selectCategory !== prevCategory) {
+                    rows.push(<ProductCategoryRow category={item.selectCategory} key={item.selectCategory}/>);
+                }
+                rows.push(<CategoryRow
+                    deleteItem={this.props.deleteItem}
+                    categoryItem={item}
+                    key={item.id}/>);
+                prevCategory = item.selectCategory;
+            });
         return (
             <ul>
-                {this
-                    .props
-                    .items
-                    .map(item => (
-                        <li key={item.id}>{item.text}
-                            <button onClick={() => this.props.deleteItem(item.id)}>
-                                Empty
-                            </button>
-                        </li>
-                    ))}
+                {rows}
             </ul>
         );
     }
