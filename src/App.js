@@ -1,6 +1,6 @@
 import React from 'react';
-import ReactTable from "react-table";
-import "react-table/react-table.css";
+import TodoList from './ReactTable';
+import CompleteIncompleteTable from './ToDoTable';
 
 /**
  *
@@ -21,7 +21,6 @@ class TodoApp extends React.Component {
 
     // Set toggle value in state
     handleChangeToggle = (e) => {
-        console.log(this.state);
         this.setState(prevState => ({
             isToggleOn: !prevState.isToggleOn,
             items: prevState
@@ -118,48 +117,18 @@ class TodoApp extends React.Component {
                         Empty
                     </button>
                 </form>
-            </div>
-        );
-    }
-}
-
-/**
- *
- *
- * @class TodoList
- * @extends {React.Component}
- */
-class TodoList extends React.Component {
-
-    render() {
-        const data = this.props.items;
-        console.log(data);
-        return (
-            <div>
-                <ReactTable
-                    data={data}
-                    columns={[
-                    {
-                        Header: "Incomplete",
-                        Cell: row => {
-                            return (<input
-                                type="checkbox"
-                                onChange={() => this.props.changeToggle(row)}/>);
-                        }
-                    }, {
-                        Header: 'Id',
-                        accessor: 'id'
-                    }, {
-                        Header: "Title",
-                        accessor: "title"
-                    }, {
-                        Header: 'Description',
-                        accessor: "description"
-                    }
-                ]}
-                    defaultPageSize={10}
-                    className="-striped -highlight"/>
-                <br/>
+                <CompleteIncompleteTable
+                    items={this
+                    .state
+                    .items
+                    .filter(item => item.isToggleOn !== true)}
+                    status='Incomplete'/>
+                <CompleteIncompleteTable
+                    items={this
+                    .state
+                    .items
+                    .filter(item => item.isToggleOn !== false)}
+                    status='Complete'/>
             </div>
         );
     }
