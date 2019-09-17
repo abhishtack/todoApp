@@ -40,7 +40,7 @@ class TodoApp extends React.Component {
             return;
         }
         // Check existing todo
-        const ifExist = (this.state.items.find(item => item.text === text));
+        const ifExist = (this.state.items.find(item => item.text === text && item.selectCategory === selectCategory));
         if (ifExist) {
             alert('Exist');
             return;
@@ -147,14 +147,15 @@ class TodoList extends React.Component {
             .props
             .items
             .forEach((item) => {
-                if (item.selectCategory !== prevCategory) {
-                    rows.push(<ProductCategoryRow category={item.selectCategory} key={item.selectCategory}/>);
+                let itemCategory = item.selectCategory;
+                if (itemCategory !== prevCategory) {
+                    rows.push(<ProductCategoryRow category={itemCategory} key={itemCategory}/>);
                 }
                 rows.push(<CategoryRow
                     deleteItem={this.props.deleteItem}
                     categoryItem={item}
                     key={item.id}/>);
-                prevCategory = item.selectCategory;
+                prevCategory = itemCategory;
             });
         return (
             <ul>
