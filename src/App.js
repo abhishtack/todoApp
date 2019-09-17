@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactTable from "react-table";
+import "react-table/react-table.css";
 
 /**
  *
@@ -12,8 +14,26 @@ class TodoApp extends React.Component {
         this.state = {
             items: [],
             text: '',
-            selectValue: 'ToDo'
+            value: '',
+            isToggleOn: true
         };
+    }
+
+    // Set toggle value in state
+    handleChangeToggle = (e) => {
+        console.log(this.state);
+        this.setState(prevState => ({
+            isToggleOn: !prevState.isToggleOn,
+            items: prevState
+                .items
+                .map(item => item.id === e
+                    ? {
+                        ...item,
+                        isToggleOn: !prevState.isToggleOn
+                    }
+                    : item)
+
+        }))
     }
 
     // Set iput value in state
@@ -21,9 +41,9 @@ class TodoApp extends React.Component {
         this.setState({text: e.target.value});
     }
 
-    // Set dropdown value in state
-    handleChangeDropDown = (e) => {
-        this.setState({selectValue: e.target.value});
+    // Set textarea value in state
+    handleTextarea = (e) => {
+        this.setState({value: e.target.value});
     }
 
     // Empty ToDo
@@ -34,27 +54,29 @@ class TodoApp extends React.Component {
     // Add item in ToDo
     handleSubmit = (e) => {
         const text = this.state.text;
-        const selectCategory = this.state.selectValue;
+        const isToggleOn = false;
         e.preventDefault();
         if (!text.length) {
             return;
         }
         // Check existing todo
-        const ifExist = (this.state.items.find(item => item.text === text && item.selectCategory === selectCategory));
+        const ifExist = (this.state.items.find(item => item.text === text));
         if (ifExist) {
             alert('Exist');
             return;
         }
         const newItem = {
-            text: text,
+            title: text,
+            description: this.state.value,
             id: Date.now(),
-            selectCategory
+            isToggleOn
         };
         this.setState(state => ({
             items: state
                 .items
                 .concat(newItem),
-            text: ''
+            text: '',
+            value: ''
         }));
     }
 
@@ -71,63 +93,32 @@ class TodoApp extends React.Component {
         return (
             <div>
                 <h3>TODO</h3>
-                <TodoList deleteItem={this.handleDelete} items={this.state.items}/>
+                <TodoList
+                    deleteItem={this.handleDelete}
+                    changeToggle={this.handleChangeToggle}
+                    items={this.state.items}/>
                 <form onSubmit={this.handleSubmit}>
                     <label htmlFor="new-todo">
                         Enter to do
                     </label>
-                    <input id="new-todo" onChange={this.handleChange} value={this.state.text}/>
+                    <input
+                        id="new-todo"
+                        placeholder='Title'
+                        onChange={this.handleChange}
+                        value={this.state.text}/>
+                    <textarea
+                        type="text"
+                        placeholder='Description'
+                        value={this.state.value}
+                        onChange={this.handleTextarea}/>
                     <button>
                         Add #{this.state.items.length + 1}
                     </button>
                     <button onClick={this.emptyTodo}>
                         Empty
                     </button>
-                    <select value={this.state.selectValue} onChange={this.handleChangeDropDown}>
-                        <option value="ToDO">ToDo</option>
-                        <option value="InProgress">InProgress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
                 </form>
             </div>
-        );
-    }
-}
-
-/**
- *
- *
- * @class ProductCategoryRow
- * @extends {React.Component}
- * It will shows the category as a header
- */
-class ProductCategoryRow extends React.Component {
-    render() {
-        const category = this.props.category;
-        return (
-            <h3>
-                {category}
-            </h3>
-        );
-    }
-}
-
-/**
- *
- *
- * @class CategoryRow
- * @extends {React.Component}
- * It will contains all the item which belong to category
- */
-class CategoryRow extends React.Component {
-    render() {
-        const item = this.props.categoryItem;
-        return (
-            <li key={item.id}>{item.text}
-                <button onClick={() => this.props.deleteItem(item.id)}>
-                    Empty
-                </button>
-            </li>
         );
     }
 }
@@ -139,28 +130,37 @@ class CategoryRow extends React.Component {
  * @extends {React.Component}
  */
 class TodoList extends React.Component {
-    render() {
-        let prevCategory = null;
-        const rows = [];
 
-        this
-            .props
-            .items
-            .forEach((item) => {
-                let itemCategory = item.selectCategory;
-                if (itemCategory !== prevCategory) {
-                    rows.push(<ProductCategoryRow category={itemCategory} key={itemCategory}/>);
-                }
-                rows.push(<CategoryRow
-                    deleteItem={this.props.deleteItem}
-                    categoryItem={item}
-                    key={item.id}/>);
-                prevCategory = itemCategory;
-            });
+    render() {
+        const data = this.props.items;
+        console.log(data);
         return (
-            <ul>
-                {rows}
-            </ul>
+            <div>
+                <ReactTable
+                    data={data}
+                    columns={[
+                    {
+                        Header: "Incomplete",
+                        Cell: row => {
+                            return (<input
+                                type="checkbox"
+                                onChange={() => this.props.changeToggle(row)}/>);
+                        }
+                    }, {
+                        Header: 'Id',
+                        accessor: 'id'
+                    }, {
+                        Header: "Title",
+                        accessor: "title"
+                    }, {
+                        Header: 'Description',
+                        accessor: "description"
+                    }
+                ]}
+                    defaultPageSize={10}
+                    className="-striped -highlight"/>
+                <br/>
+            </div>
         );
     }
 }
