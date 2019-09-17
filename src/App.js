@@ -105,9 +105,9 @@ class ProductCategoryRow extends React.Component {
     render() {
         const category = this.props.category;
         return (
-                <h3 colSpan="2">
-                    {category}
-                </h3>
+            <h3>
+                {category}
+            </h3>
         );
     }
 }
