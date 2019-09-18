@@ -12,30 +12,35 @@ class CompleteIncomplteTable extends React.Component {
 
     render() {
         const data = this.props.items;
-        const scope = {
-                maxWidth: 700,
-                display: 'inline-block',
-                padding: 100
-       };
+        const style = {
+            maxWidth: 700,
+            display: 'inline-block',
+            padding: 100
+        };
+        const tableColumn = [
+            {
+                Header: 'Id',
+                accessor: 'id'
+            }, {
+                Header: "Title",
+                accessor: "title",
+                render: data => <input value={data.row.title} onChange={this.props}/>
+            }, {
+                Header: 'Description',
+                accessor: "description"
+            }
+        ];
         return (
-            <div style={scope}>
-                <h3>{this.props.status}</h3>
-                <ReactTable
-                    data={data}
-                    columns={[{
-                        Header: 'Id',
-                        accessor: 'id'
-                    }, {
-                        Header: "Title",
-                        accessor: "title"
-                    }, {
-                        Header: 'Description',
-                        accessor: "description"
-                    }
-                ]}
-                    defaultPageSize={10}
-                    className="-striped -highlight"/>
-                <br/>
+            <div style={style}>
+            <div className="card">
+                <h3 className="card-header text-center">{this.props.status}</h3>
+                    <ReactTable
+                        data={data}
+                        columns={tableColumn}
+                        defaultPageSize={10}
+                        className="-striped -highlight"/>
+                    <br/>
+                </div>
             </div>
         );
     }
