@@ -15,7 +15,7 @@ class TodoApp extends React.Component {
             items: [],
             text: '',
             value: '',
-            isToggleOn: true
+            isToggleOn: false
         };
     }
 
@@ -59,7 +59,7 @@ class TodoApp extends React.Component {
             return;
         }
         // Check existing todo
-        const ifExist = (this.state.items.find(item => item.text === text));
+        const ifExist = (this.state.items.find(item => item.title === text));
         if (ifExist) {
             alert('Exist');
             return;

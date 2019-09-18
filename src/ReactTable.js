@@ -20,10 +20,14 @@ class TodoList extends React.Component {
                     {
                         Header: "Incomplete",
                         accessor: 'isToggleOn',
-                        Cell: row => (<input
-                            type="checkbox"
-                            checked={row.original.isToggleOn === true}
-                            onChange={() => this.props.changeToggle(row.original.id)}/>)
+                        Cell: row => (
+                            <div><input
+                                type="checkbox"
+                                checked={row.original.isToggleOn === true}
+                                onChange={() => this.props.changeToggle(row.original.id)}/>
+                                <button onClick={() => this.props.deleteItem(row.original.id)}>Delete</button>
+                            </div>
+                        )
                     }, {
                         Header: 'Id',
                         accessor: 'id'
